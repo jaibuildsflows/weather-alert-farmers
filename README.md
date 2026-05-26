@@ -29,7 +29,7 @@ tools are in English, technical, and not built with them in mind.
 ## Nodes Used
 Schedule Trigger → Google Sheets (Get Rows) → Loop Over Items 
 → HTTP Request → JavaScript Code → IF → Gmail
-
+![Weather Alert Workflow](Screenshot(78).png)
 ## Tools & Integrations
 - n8n (workflow automation)
 - OpenWeatherMap API
