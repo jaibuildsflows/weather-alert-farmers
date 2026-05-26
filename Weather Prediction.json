@@ -57,7 +57,7 @@
     },
     {
       "parameters": {
-        "url": "=https://api.openweathermap.org/data/2.5/weather?q={{ $json[ 'Farm Location (town or village name)'] }} &appid=b779b521c06105b08860aabb44f057d3&units=metric",
+        "url": "=https://api.openweathermap.org/data/2.5/weather?q={{ $json[ 'Farm Location (town or village name)'] }} &appid=YOUR_API_KEY_HERE&units=metric",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
