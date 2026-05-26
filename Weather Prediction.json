@@ -1,0 +1,317 @@
+{
+  "name": "Weather Prediction",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 4,
+              "triggerAtMinute": "={{ 0 }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        64
+      ],
+      "id": "0c2344bf-d83a-46b2-b09b-26331d07229e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1e63YO2hmAhAGtA1Fq_i8mAoBR2371UGbwBX3U5ZcklU",
+          "mode": "list",
+          "cachedResultName": "Daily Weather Alert Signup (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e63YO2hmAhAGtA1Fq_i8mAoBR2371UGbwBX3U5ZcklU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1630040853,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e63YO2hmAhAGtA1Fq_i8mAoBR2371UGbwBX3U5ZcklU/edit#gid=1630040853"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        64
+      ],
+      "id": "e540d8bc-bdc8-47a5-bdfe-ff157450fa94",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Uxv54A8GM04qKd1s",
+          "name": "Bolaji - Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.openweathermap.org/data/2.5/weather?q={{ $json[ 'Farm Location (town or village name)'] }} &appid=b779b521c06105b08860aabb44f057d3&units=metric",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        672,
+        64
+      ],
+      "id": "2f20cd98-57db-4ed3-a151-368f7f00f476",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const weather = $input.first().json.weather[0].main;\nconst temp = $input.first().json.main.temp;\nconst location = $input.first().json.name;\n\nconst messages = {\n  Rain: {\n    crop: {\n      English: \"Heavy rain expected today. Cover your crops to prevent flooding and hold off on irrigation.\",\n      Yoruba: \"Òjò ńlá ń rọ̀ lónìí. Bo àwọn ohun ọ̀gbìn rẹ láti dènà ìkún omi kí o sì dáwọ́ ìfúnpọ̀ omi dúró.\",\n      Igbo: \"A na-atụ anya oké mmiri ozuzo taa. Kpuchie ihe ubi gị iji gbochie idei mmiri ma kwụsị ịgbara mmiri.\",\n      Hausa: \"Ana sa ran ruwan sama mai ƙarfi a yau. A rufe amfanin gonakinku don hana ambaliya da kuma dakatar da ban ruwa.\"\n    },\n    animal: {\n      English: \"Heavy rain expected today. Move your animals to shelter immediately and check for waterlogging in their pen.\",\n      Yoruba: \"Òjò líle ń rọ̀ lónìí. Ẹ kó àwọn ẹranko yín lọ síbi ààbò lẹ́sẹ̀kẹsẹ̀ kí ẹ sì ṣàyẹ̀wò bóyá omi ti wọ́ nínú àgọ́ wọn.\",\n      Igbo: \"A na-atụ anya oké mmiri ozuzo taa. Bufee anụmanụ gị gaa ebe obibi ozugbo ma lelee ma mmiri ọ na-ezo n'ogige ha.\",\n      Hausa: \"Ana sa ran ruwan sama mai ƙarfi a yau. Ku kwashe dabbobinku zuwa mafaka nan da nan kuma ku duba ko akwai ruwa a cikin rumfar su.\"\n    }\n  },\n  Clouds: {\n    crop: {\n      English: \"Cloudy skies today. Good conditions for light farm work. Monitor for possible rain later.\",\n      Yoruba: \"Ojú ọ̀run tó ń ṣú mànàmáná lónìí. Ipò tó dára fún iṣẹ́ oko tó rọrùn. Máa kíyèsí bóyá òjò lè rọ̀ nígbà tó bá yá.\",\n      Igbo: \"Eluigwe ígwé ojii taa. Ọnọdụ dị mma maka ọrụ ugbo dị mfe. Lelee maka mmiri ozuzo nwere ike izo ma emechaa.\",\n      Hausa: \"Sama mai gajimare a yau. Yanayi mai kyau don aikin gona mai sauƙi. Kula da yiwuwar ruwan sama daga baya.\"\n    },\n    animal: {\n      English: \"Cloudy skies today. Good day for your animals to graze. Watch for rain later.\",\n      Yoruba: \"Ojú ọ̀run tó ń ṣú mànàmáná lónìí. Ọjọ́ rere fún àwọn ẹranko rẹ láti jẹko. Máa ṣọ́ra fún òjò tó ń bọ̀.\",\n      Igbo: \"Eluigwe ígwé ojii taa. Ụbọchị ọma maka anụmanụ gị ịta nri. Lelee maka mmiri ozuzo ma emechaa.\",\n      Hausa: \"Sama mai gajimare a yau. Barka da rana dabbobinku su yi kiwo. Ku kula da ruwan sama daga baya.\"\n    }\n  },\n  Clear: {\n    crop: {\n      English: \"Sunny day today. Irrigate your crops early before the sun gets too strong.\",\n      Yoruba: \"Oòrùn òrùn lónìí. Fi omi bomirin àwọn ohun ọ̀gbìn rẹ ní kùtùkùtù kí oòrùn tó le.\",\n      Igbo: \"Taa, anwụ na-acha. Gbaa ihe ubi gị mmiri n'oge tupu anyanwụ apụta oke ike.\",\n      Hausa: \"Rana mai haske a yau. Yi ban ruwa ga amfanin gona da wuri kafin rana ta yi ƙarfi sosai.\"\n    },\n    animal: {\n      English: \"Very sunny today. Make sure your animals have enough water and shade throughout the day.\",\n      Yoruba: \"Oòrùn máa ń tàn gan-an lónìí. Rí i dájú pé àwọn ẹranko rẹ ní omi àti òjìji tó tó ní gbogbo ọjọ́ náà.\",\n      Igbo: \"Anwụ na-acha nke ukwuu taa. Hụ na anụmanụ gị nwere mmiri na ndò zuru oke n'ụbọchị niile.\",\n      Hausa: \"Rana tana da matuƙar haske a yau. Tabbatar dabbobinku suna da isasshen ruwa da inuwa a duk tsawon yini.\"\n    }\n  },\n  Thunderstorm: {\n    crop: {\n      English: \"Severe weather today. Do not go to the farm. Keep all crops covered and stay safe.\",\n      Yoruba: \"Oju ojo lile loni. Maṣe lọ si oko. Pa gbogbo irugbin mọ ki o si wa ni ailewu.\",\n      Igbo: \"Ihu igwe dị oke njọ taa. Agala ugbo. Kpuchie ihe ubi niile ma nọrọ na nchekwa.\",\n      Hausa: \"Mummunan yanayi a yau. Kada ku je gona. Ku rufe dukkan amfanin gona ku zauna lafiya.\"\n    },\n    animal: {\n      English: \"Severe weather today. Keep all animals indoors and secure. Do not move them today.\",\n      Yoruba: \"Oju ojo lile loni. Pa gbogbo ẹranko mọ́ sínú ilé kí o sì ní ààbò. Ma se gbe won lo loni.\",\n      Igbo: \"Ihu igwe dị oke njọ taa. Debe anụmanụ niile n'ime ụlọ ma chekwaa ha. Ebugharịla ha taa.\",\n      Hausa: \"Mummunan yanayi a yau. A ajiye dukkan dabbobi a cikin gida kuma a tsare su. Kada a motsa su a yau.\"\n    }\n  },\n  Drizzle: {\n    crop: {\n      English: \"Light rain today. Delay irrigation and monitor your crops for waterlogging.\",\n      Yoruba: \"Òjò díẹ̀ lónìí. Dá ìfúnpọ̀ omi dúró kí o sì máa ṣọ́ àwọn ohun ọ̀gbìn rẹ fún ìgbóná omi.\",\n      Igbo: \"Mmiri ozuzo taa. Kwụsị ịgba mmiri ma lelee ihe ubi gị maka oke mmiri.\",\n      Hausa: \"Ruwan sama mai sauƙi a yau. Dakatar da ban ruwa kuma ku sa ido kan amfanin gonakinku don kada su yi ambaliya.\"\n    },\n    animal: {\n      English: \"Light rain today. Animals can still graze but monitor conditions closely.\",\n      Yoruba: \"Òjò díẹ̀ lónìí. Àwọn ẹranko ṣì lè jẹko ṣùgbọ́n wọ́n ń ṣe àkíyèsí ipò wọn dáadáa.\",\n      Igbo: \"Mmiri ozuzo dị obere taa. Anụmanụ ka nwere ike ịta nri mana ha na-enyocha ọnọdụ ha nke ọma.\",\n      Hausa: \"Ruwan sama mai sauƙi a yau. Dabbobi har yanzu suna iya kiwo amma suna sa ido sosai kan yanayin.\"\n    }\n  }\n};\n\nconst defaultMessages = {\n  crop: {\n    English: \"Please check weather conditions today before any farming activities.\",\n    Yoruba: \"Jọwọ ṣàyẹ̀wò ipò ojú ọjọ́ lónìí ṣáájú iṣẹ́ oko eyikeyii.\",\n    Igbo: \"Biko lelee ọnọdụ ihu igwe taa tupu ọ bụ ọrụ ugbo ọ bụla.\",\n    Hausa: \"Don Allah duba yanayin yau kafin kowane aiki na gona.\"\n  },\n  animal: {\n    English: \"Please check weather conditions today before moving your animals.\",\n    Yoruba: \"Jọwọ ṣàyẹ̀wò ipò ojú ọjọ́ lónìí ṣáájú gbígbe àwọn ẹranko rẹ.\",\n    Igbo: \"Biko lelee ọnọdụ ihu igwe taa tupu ibugharị anụmanụ gị.\",\n    Hausa: \"Don Allah duba yanayin yau kafin a motsa dabbobinku.\"\n  }\n};\n\nconst weatherMessages = messages[weather] || defaultMessages;\n\nreturn [{\n  json: {\n    weatherCondition: weather,\n    temperature: temp,\n    location: location,\n    cropMessages: weatherMessages.crop || defaultMessages.crop,\n    animalMessages: weatherMessages.animal || defaultMessages.animal\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        64
+      ],
+      "id": "91d4d6ad-601b-4a83-9a2e-5b20f85706bc",
+      "name": "Weather"
+    },
+    {
+      "parameters": {
+        "jsCode": "const weatherData = $('Weather').first().json;\nconst farmer = $('Get row(s) in sheet').first().json;\nconst farmerType = farmer['Farmer Type'];\nconst language = farmer['Preferred Language'];\n\nlet messages;\n\nif (farmerType === \"Crop Farmer\") {\n  messages = weatherData.cropMessages;\n} else if (farmerType === \"Animal Farmer\") {\n  messages = weatherData.animalMessages;\n} else {\n  messages = weatherData.cropMessages;\n}\n\nconst message = messages[language] || messages[\"English\"];\n\nconst greeting = {\n  \"English\": \"Hello\",\n  \"Yoruba\": \"E kaaro\",\n  \"Igbo\": \"Ututu oma\",\n  \"Hausa\": \"Barka da safe\"\n};\n\nconst salutation = greeting[language] || \"Hello\";\n\nreturn [{\n  json: {\n    name: farmer['Farmer Name'],\n    phone: farmer['Phone Number'],\n    email: farmer['Email Address'],\n    language: language,\n    channel: farmer['Preferred Channel'],\n    message: salutation + \" \" + farmer['Farmer Name'] + \", \" + message\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        64
+      ],
+      "id": "80ba0aa5-7b3b-411c-976e-2edcc1a8ff39",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.africastalking.com/version1/messaging",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "atsk_6d14354b28446e1e878783e12d8540028dc2208049d4fe65e707da46f030b0f4518bfcdd"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username",
+              "value": "farmalert"
+            },
+            {
+              "name": "to",
+              "value": "={{ $json.phone }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1568,
+        -32
+      ],
+      "id": "8f951183-6574-48e0-b2b6-d4d565f3eec6",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0172d713-0a58-4e1e-bb79-7905d6c06216",
+              "leftValue": "={{ $json.channel }}",
+              "rightValue": "SMS",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        64
+      ],
+      "id": "a0480990-cfc9-4d88-993b-2a03f4a2ce6f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "=akinwumibolaji9@gmail.com",
+        "subject": "=Daily Farm Weather Alert",
+        "emailType": "text",
+        "message": "={{ $('Code in JavaScript').item.json.message }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1568,
+        160
+      ],
+      "id": "ea758f02-5835-493c-b66f-9e610574963b",
+      "name": "Send a message",
+      "webhookId": "9c58420b-8714-4f1e-96f3-508679cc29e4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xco1Qc7S2n1fGPOZ",
+          "name": "Bolaji - Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        448,
+        64
+      ],
+      "id": "ba28a964-3b3f-440c-b0f0-7e6e7ebcea1a",
+      "name": "Loop Over Items1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weather": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Africa/Lagos",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "fef24826-301e-4124-b232-5cc052170a2a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5330b24fec260746310ab481325a33686ac1f45840e1b59eee2c57a9846e8110"
+  },
+  "id": "2VsdzeBJDR3yhHIe",
+  "tags": []
+}
