@@ -21,10 +21,10 @@ tools are in English, technical, and not built with them in mind.
 - Fetches real-time weather data from the OpenWeatherMap API
 - Identifies whether each farmer is a crop or livestock farmer
 - Tailors the alert message accordingly using JavaScript
-- Sends each farmer their alert in their preferred language via Gmail
+- Sends each farmer their alert in their preferred language via Gmail or SMS
 
 ## Supported Languages
-🇬🇧 English | Yoruba | Igbo | Hausa
+ English | Yoruba | Igbo | Hausa
 
 ## Nodes Used
 Schedule Trigger → Google Sheets (Get Rows) → Loop Over Items 
@@ -35,7 +35,7 @@ Schedule Trigger → Google Sheets (Get Rows) → Loop Over Items
 - OpenWeatherMap API
 - Google Sheets
 - Gmail
-
+- Africa's Talking API
 ## Why It Matters
 This workflow doesn't just send weather data — it sends the 
 *right* message, to the *right* farmer, in the *right* language. 
